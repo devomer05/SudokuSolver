@@ -151,6 +151,7 @@ void SudokuSolver::InitPossibilityArray(Sudoku * s, int * possibilityArr)
 
 int SudokuSolver::ApplyNakedSingle(int * arr, Sudoku * s)
 {
+	// Cell that has only 1 possibility due to all other numbers show up at same row, column or box
 	int newClueCount = 0;
 	for (int i = 0; i < ROW; i++)
 	{
@@ -160,7 +161,7 @@ int SudokuSolver::ApplyNakedSingle(int * arr, Sudoku * s)
 			if( arr[startIndex] != 0 && arr[startIndex+1] == 0) // If there is only 1 possibility
 			{
 				newClueCount++;
-				Update(i, j, arr[startIndex], arr, s, "Cell has only 1 choice" );
+				Update(i, j, arr[startIndex], arr, s, "Naked Single: Cell has only 1 possibility" );
 			}
 		}
 	}
@@ -169,9 +170,8 @@ int SudokuSolver::ApplyNakedSingle(int * arr, Sudoku * s)
 
 int SudokuSolver::ApplyHiddenSingle(int * possibilityArr, Sudoku * s)
 {
-	// For every row, column and box; we will search for numbers from 1 to 9, and check if any number has only one place.
-	// For example: 2-9-5-(1/3/8)-(3/8)-7-(3/6/8)-(3/6)-(3/6) at this row it is obvious that 4th number is 1. 
-	
+	//	If a number shows up at only one cell as a possibility, then this cell must be this number. 
+	//	Ex: If Row is  2-9-5-(1/3/8)-(3/8)-7-(3/6/8)-(3/6)-(3/6);  then 4. cell is "1"
 	int newClueCount = 0;
 	// Search in rows
 	for (int i = 0; i < ROW; i++)
@@ -196,7 +196,7 @@ int SudokuSolver::ApplyHiddenSingle(int * possibilityArr, Sudoku * s)
 			if (numberPossibilities[n][0] == 1)
 			{
 				newClueCount++;
-				Update(i, numberPossibilities[n][1], n + 1, possibilityArr, s, "Number has only 1 possible place for this row");
+				Update(i, numberPossibilities[n][1], n + 1, possibilityArr, s, "Hidden Single: Number has only 1 possible cell at this row");
 			}
 		}
 	}
@@ -223,7 +223,7 @@ int SudokuSolver::ApplyHiddenSingle(int * possibilityArr, Sudoku * s)
 			if (numberPossibilities[n][0] == 1)
 			{
 				newClueCount++;
-				Update(numberPossibilities[n][1], j, n + 1, possibilityArr, s, "Number has only 1 possible place for this column");
+				Update(numberPossibilities[n][1], j, n + 1, possibilityArr, s, "Hidden Single: Number has only 1 possible cell at this column");
 			}
 		}
 	}
@@ -261,7 +261,7 @@ int SudokuSolver::ApplyHiddenSingle(int * possibilityArr, Sudoku * s)
 				if (numberPossibilities[p][0] == 1)
 				{
 					newClueCount++;
-					Update(numberPossibilities[p][1], numberPossibilities[p][2], p + 1, possibilityArr, s, "Number has only 1 possible place in box" );
+					Update(numberPossibilities[p][1], numberPossibilities[p][2], p + 1, possibilityArr, s, "Hidden Single: Number has only 1 possible cell at this box" );
 				}
 			}
 		}
@@ -271,6 +271,9 @@ int SudokuSolver::ApplyHiddenSingle(int * possibilityArr, Sudoku * s)
 
 bool SudokuSolver::ApplyHiddenPair(int * possibilityArr, Sudoku * s)
 {
+	//	If  2numbers show up at only 2 cells as a possibility, then this cells must be this numbers.  Ex: If Row is  2-9-5-(1/3/8)-(4/3/8)-7-(1/4/6)-(4/6)-(1/4/6),
+	//	3 & 8 only can go 3. and 4. cells.Then these cells must be 3 or 8. we can remove other possibilities here : 2 - 9 - 5 - (3 / 8) - (3 / 8) - 7 - (1 / 4 / 6) - (4 / 6) - (1 / 4 / 6)
+	
 	bool hasNewClue = false;
 	// Search in rows
 	for (int i = 0; i < ROW; i++)
@@ -328,8 +331,9 @@ bool SudokuSolver::ApplyHiddenPair(int * possibilityArr, Sudoku * s)
 								hasNewClue = true;
 #ifndef PERFORMANCE_MODE
 								std::stringstream ss;
-								ss << m + 1 << " and " << n + 1 << " removed from possibilities at row " << i + 1
-									<< " Because these 2 numbers can go only " << numberPossibilities[n][1] + 1 << " & " << numberPossibilities[n][2] + 1;
+								ss << "Hidden Pair: ";
+								ss << m + 1 << "&" << n + 1 << " can go only " << numberPossibilities[n][1] + 1 << "&" << numberPossibilities[n][2] + 1 
+									<< ". cells at row " << i + 1 << "; removing other possibilities from this cell";
 								PrintStepInfo(ss.str(), s);
 #endif
 
@@ -395,8 +399,9 @@ bool SudokuSolver::ApplyHiddenPair(int * possibilityArr, Sudoku * s)
 								hasNewClue = true;
 #ifndef PERFORMANCE_MODE
 								std::stringstream ss;
-								ss << m + 1 << " and " << n + 1 << " removed from possibilities at col " << j + 1
-									<< " Because these 2 numbers can go only " << numberPossibilities[n][1] + 1 << " & " << numberPossibilities[n][2] + 1;
+								ss << "Hidden Pair: ";
+								ss << m + 1 << "&" << n + 1 << " can go only " << numberPossibilities[n][1] + 1 << "&" << numberPossibilities[n][2] + 1 
+									<< "at col " << j + 1 << "; removing other possibilities from this cell";
 								PrintStepInfo(ss.str(), s);
 #endif
 							}
@@ -485,9 +490,9 @@ bool SudokuSolver::ApplyHiddenPair(int * possibilityArr, Sudoku * s)
 									hasNewClue = true;
 #ifndef PERFORMANCE_MODE
 									std::stringstream ss;
-									ss << m + 1 << " and " << n + 1 << " removed from possibilities at box "
-										<< " Because these 2 numbers can go only ( " << numberPossibilities[n][1] + 1 << ", " << numberPossibilities[n][2] + 1
-										<< " ) and ( " << numberPossibilities[n][3] + 1 << ", " << numberPossibilities[n][4] + 1 << " ) ";
+									ss << "Hidden Pair: ";
+									ss << m + 1 << "&" << n + 1 << " can go only (" << numberPossibilities[n][1] + 1 << ", " << numberPossibilities[n][2] + 1
+										<< ") & (" << numberPossibilities[n][3] + 1 << ", " << numberPossibilities[n][4] + 1 << ") at box; removing other possibilities from this cell ";
 									PrintStepInfo(ss.str(), s);
 #endif
 								}
@@ -503,6 +508,9 @@ bool SudokuSolver::ApplyHiddenPair(int * possibilityArr, Sudoku * s)
 
 bool SudokuSolver::ApplyNakedPair(int * possibilities, Sudoku * s)
 {
+	// If 2 Cells have same 2 possibilities, then it is obvious that these 2 numbers will go these 2 cells.So we can remove these numbers from possibility list of other cells
+	// Ex: If row is  2 - 9 - 5 - (1 / 3 / 8) - (4 / 8) - 7 - (4 / 6 / 8) - (3 / 6) - (3 / 6) last 2 cells are obviously 3 and 6, 
+	// so we can remove 3 and 6 from other cells : 2 - 9 - 5 - (1 / 8) - (4 / 8) - 7 - (4 / 8) - (3 / 6) - (3 / 6)
 	bool hasNewClue = false;
 	for (int i = 0; i < ROW; i++)
 	{
@@ -541,7 +549,7 @@ bool SudokuSolver::ApplyNakedPair(int * possibilities, Sudoku * s)
 					{
 #ifndef PERFORMANCE_MODE
 						std::stringstream ss;
-						ss << "New clue: " << val1 << " and " << val2 << " can go only " << doubleIndices[k] + 1 << " & " << doubleIndices[l] + 1 << " at row " << i + 1;
+						ss << "Naked Pair: " << val1 << " & " << val2 << " can go only " << doubleIndices[k] + 1 << ". & " << doubleIndices[l] + 1 << ". cells at row " << i + 1 << "; Removing from other cells' possibilities";
 						PrintStepInfo(ss.str(), s);
 #endif
 						hasNewClue = true;
@@ -587,7 +595,7 @@ bool SudokuSolver::ApplyNakedPair(int * possibilities, Sudoku * s)
 					{
 #ifndef PERFORMANCE_MODE
 						std::stringstream ss;
-						ss << "New clue: " << val1 << " and " << val2 << " can go only " << doubleIndices[k] + 1 << " & " << doubleIndices[l] + 1 << " at column " << j + 1;
+						ss << "Naked Pair: " << val1 << " & " << val2 << " can go only " << doubleIndices[k] + 1 << ". & " << doubleIndices[l] + 1 << ". cells at column " << j + 1 << "; Removing from other cells' possibilities";
 						PrintStepInfo(ss.str(), s);
 #endif
 						hasNewClue = true;
@@ -647,9 +655,9 @@ bool SudokuSolver::ApplyNakedPair(int * possibilities, Sudoku * s)
 						{
 #ifndef PERFORMANCE_MODE
 							std::stringstream ss;
-							ss << "New clue: " << val1 << " and " << val2 << " can go only ( "
+							ss << "Naked Pair: " << val1 << " & " << val2 << " can go only ( "
 									<< doubleIndices[k] + 1 << ", " << doubleIndices[k + 1] + 1 << " ) & ( "
-									<< doubleIndices[l] + 1 << ", " << doubleIndices[l + 1] + 1 << " ) at  box " << std::endl;
+									<< doubleIndices[l] + 1 << ", " << doubleIndices[l + 1] + 1 << " ) at box; Removing from other cells' possibilities ";
 							PrintStepInfo(ss.str(), s);
 #endif
 							hasNewClue = true;
@@ -679,7 +687,7 @@ void SudokuSolver::Update(int x, int y, int val, int* possibilities, Sudoku* s, 
 	// Remove possibilities at same box
 	RemovePossibilitiesAtSameBox(x, y, possibilities, val);
 
-	PrintStepInfo("A new cell solved.", s);
+	PrintStepInfo(msg, s);
 
 }
 

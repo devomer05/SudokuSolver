@@ -27,7 +27,7 @@ public:
 	int get(int x, int y);
 	void print();
 	bool getFirstUnassignedPos(int& row, int &col);
-	int getFoundCellCount();
+	int GetAssignedCellCount();
 	bool init(std::string input);
 	bool isSafe(int x, int y, int val)
 	{

@@ -59,7 +59,7 @@ ESolveResult SolveSudokuAtFile(bool applyTechniques, bool stepByStep, std::strin
 	Sudoku s;
 	if (s.init(fileName))
 	{
-		std::cout << "Sudoku has initialized with success: " << fileName << " " << s.getFoundCellCount() << " hints;\t";
+		std::cout << "Sudoku has initialized with success: " << fileName << " " << s.GetAssignedCellCount() << " hints;\t";
 #ifndef PERFORMANCE_MODE
 		s.print();
 #endif
@@ -174,7 +174,6 @@ void SuccessTest( std::string filePath)
 	int counterBrute = 0, counterHeuristic = 0, counterUnsolved = 0;
 	for (int i = 0; i < vs.size(); i++)
 	{
-		//system("cls");
 		ESolveResult e = SolveSudokuAtFile(true, false, vs[i]);
 		if (e == E_SOLVED_BRUTE_FORCE)
 			counterBrute++;
@@ -295,7 +294,7 @@ int main(int argc, char* argsv[])
 	{
 		while (true)
 		{
-			std::cout << "Enter path of sudoku file" << std::endl;
+			std::cout << "Enter path of sudoku file (\"exit\" to leave ): ";
 			std::cin >> fileName;
 			if (fileName == "exit")
 				break;

@@ -94,6 +94,8 @@ void Sudoku::print()
 		else
 			std::cout << "\t                                     " << std::endl;
 	}
+	lastX = lastY = -1;
+	lastMessage = "";
 }
 
 bool Sudoku::getFirstUnassignedPos(int &x, int &y)
@@ -105,7 +107,7 @@ bool Sudoku::getFirstUnassignedPos(int &x, int &y)
 	return false;
 }
 
-int Sudoku::getFoundCellCount()
+int Sudoku::GetAssignedCellCount()
 {
 	int counter = 0;
 	for (int x = 0; x < ROW; x++)
