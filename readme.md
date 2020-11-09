@@ -71,7 +71,8 @@ At both usage; you will be asked if you want to use Sudoku techniques ( or just 
 
 
 ### Performance Mode
-There is a performance mode of SudokuSolver.  You can analyze performance of sudoku solution techniques or calculate success rate of applied techniques.
+There is a performance mode of SudokuSolver. To enable performance mode, comment out "#undef  PERFORMANCE_MODE" at 5. line of  SudokuSolver.h header file.
+You can analyze performance of sudoku solution techniques or calculate success rate of applied techniques.
 When you choose "Peformance Test File", a file path will be asked. After you enter path of sudoku and repetition number, the sudoku puzzle will be solved "repetition" times by recursive brute force algorithm; then same puzzle will be solved by sudoku solution techniques ( again repetition times ) and will give you results. 
 
 If you choose "Success Test File", program will try to solve sudoku puzzle with sudoku techniques, and it will print if sudoku solved completely, or it will print  cell count found by these techniques.
