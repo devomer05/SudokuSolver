@@ -78,7 +78,6 @@ ESolveResult SolveSudokuAtFile(bool applyTechniques, bool stepByStep, std::strin
 				std::cout << " ( " << ss.GetSolvedCellCount() << " cells found by techniques )";
 			}
 			std::cout << std::endl;
-			
 		}
 		else if (solved == E_SOLVED_HEURISTIC)
 		{
@@ -123,7 +122,6 @@ void PerformanceTestFile(std::string fileName, int repeat)
 			copy = s;
 			solved = ss.Solve(&copy);
 		}
-
 		end = clock();
 		elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
 
